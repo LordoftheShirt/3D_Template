@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d13e0e51fe1d6ed4490c50e3815835fb, type: 3}
+  m_Name: pathT
+  m_EditorClassIdentifier: Assembly-CSharp::WFC_2D_Scriptable
+  WFCType: 4
+  gameObject: {fileID: 4164221879583171077, guid: 03c3d6329cfdeca45a3530b1fbee3aa9, type: 3}
+  rotation90:
+  - rotation: 0
+    up: -1
+    down: 1
+    left: 1
+    right: 1
+  - rotation: 1
+    up: 1
+    down: 1
+    left: 1
+    right: -1
+  - rotation: 2
+    up: 1
+    down: -1
+    left: 1
+    right: 1
+  - rotation: 3
+    up: 1
+    down: 1
+    left: -1
+    right: 1

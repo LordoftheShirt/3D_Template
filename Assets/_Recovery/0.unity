@@ -578,8 +578,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1ed8a3bf7dfde840babe86fc6958d95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WFCAlgorithm
-  rowMax: 32
-  columnMax: 32
+  rowMax: 9
+  columnMax: 9
   TileTextDisplay: {fileID: 3187963805390420780, guid: 8396abc97c3ac2942bd1c6ccdc36fa71, type: 3}
 --- !u!4 &588413314
 Transform:
