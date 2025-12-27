@@ -5,4 +5,5 @@ public class ScriptableModules : ScriptableObject
 {
     public WFCModuleEnum module;
     public GameObject prefab;
+    public float weightPercentage = 1f;
 }

@@ -48,16 +48,14 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
          
         // TODO:
         /*
-         * Should be able to modify percentage weights somehow.
-         * I want the second away neighbour to be able to react. Currently untestable.
-         * The algorithm should be resettable.
+         * I want the second away neighbour to be able to react. DONE?! (Currently untestable.)
          * 
          * Objects should be made both addable and removable via player click?
-         * Expand the algorithm into 3D to allow the possibility of 3D.
          * 
+         * THESE TWO GO HAND IN HAND:
+         * Expand the algorithm into 3D to allow the possibility of 3D.
          * Mutli-use sockets? How does one do that? They're currently binary.
          * 
-         * Eliminate last index bias.
          * Optimise?
          */
     }
@@ -169,15 +167,6 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
                             entropy = levelGrid[i, j].GetEntropy();
                             //Debug.Log("Found lesser entropy: " + entropy);
                         }
-                        /* This randomizer is biased toawrds all later indexes. The more I think about the natural build order bias, 
-                         * the less I think it is much of an issue. Feels like wasted computing to try and randomly pick between identical entropies.
-                        else if (entropy == levelGrid[i, j].GetEntropy() && Random.Range(0, 2) == 1)
-                        {
-                            Debug.Log("Coin flip!");
-                            row = i;
-                            column = j;
-                            entropy = levelGrid[i, j].GetEntropy();
-                        } */
                     } 
                 }
             }
@@ -195,33 +184,6 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
         
     }
 
-    // hardcodes the tiles' weights.
-    private WFCModuleType DetermineTileWeights(int row, int col)
-    {
-        
-        WFCModuleType chosen = null;
-
-        /*
-        int randomNumber = 0;
-        while (chosen == null)
-        {
-            randomNumber = Random.Range(1, 101);
-
-            if(randomNumber > 50)
-            {
-                chosen = blank;
-            }
-
-
-
-            if (!levelGrid[row, col].myModuleAlternatives.Contains(chosen))
-                chosen = null;
-        }
-        */
-        return chosen;
-        
-    }
-
     public void RandomizeFirstTile()
     {
         CollapseTile(Random.Range(0, rowMax), Random.Range(0, columnMax));
@@ -232,12 +194,17 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
     {
         if (type == null)
         {
-            int randomIndex = Random.Range(0, levelGrid[row, col].myModuleAlternatives.Count);
-            
-            // Random index.
-            type = levelGrid[row, col].myModuleAlternatives.ElementAt(randomIndex);
+            int randomIndex = -1;
+            while (randomIndex == -1)
+            {
+                randomIndex = Random.Range(0, levelGrid[row, col].myModuleAlternatives.Count);
+                type = levelGrid[row, col].myModuleAlternatives.ElementAt(randomIndex);
 
-            //type = DetermineTileWeights(row, col);
+                // If the weight does not fulfill the size of the random value, do a do-over. Example: weight is 10% and random.value rolls 20%. Now, random.value is bigger than the weight. Try again. 
+                if (ResourceSystem.Instance.GetWFCModule(type.myEnum).weightPercentage <= Random.value)
+                    randomIndex = -1;
+            }
+            // Random index.
         }
 
         levelGrid[row, col].myModule = type;
@@ -246,12 +213,6 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
         levelGrid[row, col].UpdateTextDisplay();
 
         UpdateSurroundingNeighbours(row, col);
-        // Ensures 
-
-        // Add a way of collapsing tiles already... Then updating the
-        // Then WFCSlot.UpdateLocalNeighbours in all my neigbours.
-        // Then WFCSlot.CalculateEntropy in all my neighbours.
-
     }
 
     public void UpdateSurroundingNeighbours(int row, int col)
