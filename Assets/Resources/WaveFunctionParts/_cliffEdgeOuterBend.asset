@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 42d3e43241d4be0498665a35fa5a6eeb, type: 3}
-  m_Name: Straight
-  m_EditorClassIdentifier: Assembly-CSharp::ScriptableModuies
-  module: 1
-  prefab: {fileID: 3684606304303439528, guid: 6e0c25ff8e95a2f4dbf40de2983f7c7b, type: 3}
+  m_Name: _cliffEdgeOuterBend
+  m_EditorClassIdentifier: Assembly-CSharp::ScriptableModules
+  moduleName: cliffEdgeOuterBend
+  prefab: {fileID: 919132149155446097, guid: f48a58c551e213d4cab189980dfdfd50, type: 3}
+  weightPercentage: 1

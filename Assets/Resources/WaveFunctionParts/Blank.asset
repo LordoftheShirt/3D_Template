@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42d3e43241d4be0498665a35fa5a6eeb, type: 3}
   m_Name: Blank
   m_EditorClassIdentifier: Assembly-CSharp::ScriptableModuies
+  moduleName: blank
   module: 0
   prefab: {fileID: 5201721914085212650, guid: 95a3fd29619b10643b3df41b72fb4d49, type: 3}
+  weightPercentage: 1

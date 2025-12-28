@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 42d3e43241d4be0498665a35fa5a6eeb, type: 3}
-  m_Name: Cross
-  m_EditorClassIdentifier: Assembly-CSharp::ScriptableModuies
-  module: 3
-  prefab: {fileID: 2450785982446410637, guid: eb21063e6f54293419b78fde15309aa6, type: 3}
+  m_Name: _coastOuterBend
+  m_EditorClassIdentifier: Assembly-CSharp::ScriptableModules
+  moduleName: coastOuterBend
+  prefab: {fileID: 919132149155446097, guid: 7500a8f9d4fe81745ac8a7338fb249fb, type: 3}
+  weightPercentage: 1

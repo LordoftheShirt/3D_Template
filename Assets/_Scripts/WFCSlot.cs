@@ -65,6 +65,26 @@ public class WFCSlot : MonoBehaviour
         CalculateLocalEntropy();
     }
 
+    private bool CheckIfFlipped(string neighbourSocket)
+    {
+        // this is to first find any flipped.
+        foreach (WFCModuleType module in myModuleAlternatives)
+        {
+            if (neighbourSocket.Equals(module.posZ + "f"))
+            {
+                myModuleAlternatives.RemoveWhere(r => !r.Equals(module.posZ));
+                return true;
+            }
+
+            if (module.Equals(neighbourSocket + "f"))
+            {
+                myModuleAlternatives.RemoveWhere(r => !r.Equals(neighbourSocket + "f"));
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void CalculateLocalEntropy()
     {
         //Debug.Log("MyEntropy before filter: " + GetEntropy());
@@ -75,7 +95,8 @@ public class WFCSlot : MonoBehaviour
         int entropyCount = myModuleAlternatives.Count;
 
         if (topN != null)
-            myModuleAlternatives.RemoveWhere(r => r.posZ != topN.negZ);
+            if (!CheckIfFlipped(topN.negZ))
+                myModuleAlternatives.RemoveWhere(r => r.posZ.Equals(topN.negZ));
         /* else if (WFCAlgorithm.Instance.columnMax > myCol +1 && WFCAlgorithm.Instance.levelGrid[myRow, myCol + 1].myModuleAlternatives.FirstOrDefault(r => r.negZ.Equals("-1")) == null)
             myModuleAlternatives.RemoveWhere(r => r.posZ.Equals("-1"));
         else if (WFCAlgorithm.Instance.columnMax > myCol + 1 && WFCAlgorithm.Instance.levelGrid[myRow, myCol + 1].myModuleAlternatives.FirstOrDefault(r => r.negZ.Equals("1")) == null)
@@ -85,32 +106,33 @@ public class WFCSlot : MonoBehaviour
 
 
         if (bottomN != null)
-        {
-            myModuleAlternatives.RemoveWhere(r => !r.negZ.Equals(bottomN.posZ));
-            //Debug.Log("Entropy lowered!" + GetEntropy());
-        }
+            if (!CheckIfFlipped(bottomN.posZ))
+                myModuleAlternatives.RemoveWhere(r => !r.negZ.Equals(bottomN.posZ));
 
 
         if (leftN != null)
-            myModuleAlternatives.RemoveWhere(r => r.negX != leftN.posX);
+            if (!CheckIfFlipped(leftN.posX))
+                myModuleAlternatives.RemoveWhere(r => !r.negX.Equals(leftN.posX));
 
         if (rightN != null)
-            myModuleAlternatives.RemoveWhere(r => r.posX != rightN.negX);
-
-        if (myModuleAlternatives.Count == 0)
-        {
-            //Debug.Log("No alternatives LEFT ERROR:" + myRow + ", " + myCol);
-            WFCAlgorithm.Instance.CollapseTile(myRow, myCol, 0, WFCAlgorithm.Instance.blank);
-
-        }
+            if (!CheckIfFlipped(rightN.negX))
+                myModuleAlternatives.RemoveWhere(r => !r.posX.Equals(rightN.negX));
 
         if (WFCAlgorithm.Instance.height3DMax > 1)
         {
             if (above3DN != null)
-                myModuleAlternatives.RemoveWhere(r => r.posY != above3DN.negY);
+                if (!CheckIfFlipped(above3DN.negY))
+                    myModuleAlternatives.RemoveWhere(r => !r.posY.Equals(above3DN.negY));
 
             if (below3DN != null)
-                myModuleAlternatives.RemoveWhere(r => r.negY != below3DN.posY);
+                if (!CheckIfFlipped(below3DN.posY))
+                    myModuleAlternatives.RemoveWhere(r => !r.negY.Equals(below3DN.posY));
+        }
+
+        if (myModuleAlternatives.Count == 0)
+        {
+            Debug.Log("No alternatives LEFT ERROR:" + myRow + ", " + myCol);
+            WFCAlgorithm.Instance.CollapseTile(myRow, myCol, 0, WFCAlgorithm.Instance.blank);
         }
 
 

@@ -15,7 +15,7 @@ public class ResourceSystem : Singleton<ResourceSystem>
     */
 
     public List<ScriptableModules> WFCModuleList { get; private set; }
-    public Dictionary<WFCModuleEnum2D, ScriptableModules> _WFCModulesDict;
+    public Dictionary<string, ScriptableModules> _WFCModulesDict;
 
 
     protected override void Awake()
@@ -30,8 +30,8 @@ public class ResourceSystem : Singleton<ResourceSystem>
         ExampleHeroes = Resources.LoadAll<ScriptableExampleHero>("ExampleHeroes").ToList();
         _ExampleHeroesDict = ExampleHeroes.ToDictionary(r => r.HeroType, r => r);
 
-        WFCModuleList = Resources.LoadAll<ScriptableModules>("WaveFunctionParts2D").ToList();
-        _WFCModulesDict = WFCModuleList.ToDictionary(r => r.module, r => r);
+        WFCModuleList = Resources.LoadAll<ScriptableModules>("WaveFunctionParts").ToList();
+        _WFCModulesDict = WFCModuleList.ToDictionary(r => r.moduleName, r => r);
 
         /* Attempt 1
         WaveFunctionParts2D = Resources.LoadAll<WFC_2D_Scriptable>("WaveFunctionParts2D").ToList();
@@ -42,7 +42,7 @@ public class ResourceSystem : Singleton<ResourceSystem>
     public ScriptableExampleHero GetExampleHero(ExampleHeroType t) => _ExampleHeroesDict[t];
     public ScriptableExampleHero GetRandomHero() => ExampleHeroes[Random.Range(0, ExampleHeroes.Count)];
 
-    public ScriptableModules GetWFCModule(WFCModuleEnum2D t) => _WFCModulesDict[t];
+    public ScriptableModules GetWFCModule(string t) => _WFCModulesDict[t];
 
     /* Attempt 1
     public WFC_2D_Scriptable GetWaveFunctionPart(WFCType t) => _WFCPartsDict[t];

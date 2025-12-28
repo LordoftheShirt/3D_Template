@@ -46,6 +46,73 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
         allModuleAlternatives.Add(deadEnd_2);
         allModuleAlternatives.Add(deadEnd_3); */
 
+        // 3D
+        allModuleAlternatives.Add(openSpace);
+        allModuleAlternatives.Add(flatGrass);
+
+        // COAST
+        allModuleAlternatives.Add(coastEdgeInnerBend_0);
+        allModuleAlternatives.Add(coastEdgeInnerBend_1);
+        allModuleAlternatives.Add(coastEdgeInnerBend_2);
+        allModuleAlternatives.Add(coastEdgeInnerBend_3);
+
+        allModuleAlternatives.Add(coastEdgeOuterBend_0);
+        allModuleAlternatives.Add(coastEdgeOuterBend_1);
+        allModuleAlternatives.Add(coastEdgeOuterBend_2);
+        allModuleAlternatives.Add(coastEdgeOuterBend_3);
+
+        allModuleAlternatives.Add(coastStraight_0);
+        allModuleAlternatives.Add(coastStraight_1);
+
+        // Everything CIFF
+        allModuleAlternatives.Add(cliffStemInnerBend_0);
+        allModuleAlternatives.Add(cliffStemInnerBend_1);
+        allModuleAlternatives.Add(cliffStemInnerBend_2);
+        allModuleAlternatives.Add(cliffStemInnerBend_3);
+
+        allModuleAlternatives.Add(cliffStemOuterBend_0);
+        allModuleAlternatives.Add(cliffStemOuterBend_1);
+        allModuleAlternatives.Add(cliffStemOuterBend_2);
+        allModuleAlternatives.Add(cliffStemOuterBend_3);
+
+        allModuleAlternatives.Add(cliffStemStraight_0);
+        allModuleAlternatives.Add(cliffStemStraight_1);
+        allModuleAlternatives.Add(cliffStemStraight_2);
+        allModuleAlternatives.Add(cliffStemStraight_3);
+
+        allModuleAlternatives.Add(cliffEdgeInnerBend_0);
+        allModuleAlternatives.Add(cliffEdgeInnerBend_1);
+        allModuleAlternatives.Add(cliffEdgeInnerBend_2);
+        allModuleAlternatives.Add(cliffEdgeInnerBend_3);
+
+        allModuleAlternatives.Add(cliffEdgeOuterBend_0);
+        allModuleAlternatives.Add(cliffEdgeOuterBend_1);
+        allModuleAlternatives.Add(cliffEdgeOuterBend_2);
+        allModuleAlternatives.Add(cliffEdgeOuterBend_3);
+
+        allModuleAlternatives.Add(cliffEdgeStraight_0);
+        allModuleAlternatives.Add(cliffEdgeStraight_1);
+        allModuleAlternatives.Add(cliffEdgeStraight_2);
+        allModuleAlternatives.Add(cliffEdgeStraight_3);
+
+        //include edgeToStem here.
+
+        // These "Only Walls" can be left out upon first trial.
+        allModuleAlternatives.Add(cliffInnerBend_0);
+        allModuleAlternatives.Add(cliffInnerBend_1);
+        allModuleAlternatives.Add(cliffInnerBend_2);
+        allModuleAlternatives.Add(cliffInnerBend_3);
+
+        allModuleAlternatives.Add(cliffOuterBend_0);
+        allModuleAlternatives.Add(cliffOuterBend_1);
+        allModuleAlternatives.Add(cliffOuterBend_2);
+        allModuleAlternatives.Add(cliffOuterBend_3);
+
+        allModuleAlternatives.Add(cliffStemStraight_0);
+        allModuleAlternatives.Add(cliffStemStraight_1);
+        allModuleAlternatives.Add(cliffStemStraight_2);
+        allModuleAlternatives.Add(cliffStemStraight_3);
+
         // TODO:
         /*
          * I want the second away neighbour to be able to react. DONE?! (Currently untestable.)
@@ -62,7 +129,7 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
 
     void Start()
     {
-        meshSize = ResourceSystem.Instance.GetWFCModule(WFCModuleEnum2D.Straight).prefab.GetComponent<MeshRenderer>().bounds.size;
+        meshSize = ResourceSystem.Instance.GetWFCModule("moduleSize").prefab.GetComponent<MeshRenderer>().bounds.size;
         //print("meshSize: " + meshSize);
 
         levelGrid = new WFCSlot[rowMax, columnMax, height3DMax];
@@ -211,14 +278,14 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
                 type = levelGrid[row, col, height3D].myModuleAlternatives.ElementAt(randomIndex);
 
                 // If the weight does not fulfill the size of the random value, do a do-over. Example: weight is 10% and random.value rolls 20%. Now, random.value is bigger than the weight. Try again. 
-                if (ResourceSystem.Instance.GetWFCModule(type.myEnum).weightPercentage <= Random.value)
+                if (ResourceSystem.Instance.GetWFCModule(type.myType).weightPercentage <= Random.value)
                     randomIndex = -1;
             }
             // Random index.
         }
 
         levelGrid[row, col, height3D].myModule = type;
-        levelGrid[row, col, height3D].myPrefab = Instantiate(ResourceSystem.Instance.GetWFCModule(type.myEnum).prefab, new Vector3(meshSize.x * row, meshSize.y * height3D, meshSize.z * col), Quaternion.Euler(new Vector3(0, 90 * type.rotation, 0)), this.transform);
+        levelGrid[row, col, height3D].myPrefab = Instantiate(ResourceSystem.Instance.GetWFCModule(type.myType).prefab, new Vector3(meshSize.x * row, meshSize.y * height3D, meshSize.z * col), Quaternion.Euler(new Vector3(0, 90 * type.rotation, 0)), this.transform);
         levelGrid[row, col, height3D].myModuleAlternatives.Clear();
         levelGrid[row, col, height3D].UpdateTextDisplay();
 
@@ -251,27 +318,118 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
     }
 
 
-    // creation of all module Data. All gets assembled into a Hashset up at Awake.
-    public WFCModuleType blank = new WFCModuleType("-1", "-1", "-1", "-1", WFCModuleEnum2D.Blank, 0);
-    public WFCModuleType cross = new WFCModuleType("1", "1", "1", "1", WFCModuleEnum2D.Cross, 0);
+    // creation of all 2D-module Data. All gets assembled into a Hashset up at Awake.
+    public WFCModuleType blank = new WFCModuleType("-1", "-1", "-1", "-1", "blank", 0);
+    public WFCModuleType cross = new WFCModuleType("1", "1", "1", "1", "cross", 0);
 
-    public WFCModuleType straight_0 = new WFCModuleType("-1", "1", "-1", "1", WFCModuleEnum2D.Straight, 0);
-    public WFCModuleType straight_1 = new WFCModuleType("1", "-1", "1", "-1", WFCModuleEnum2D.Straight, 1);
+    public WFCModuleType straight_0 = new WFCModuleType("-1", "1", "-1", "1", "straight", 0);
+    public WFCModuleType straight_1 = new WFCModuleType("1", "-1", "1", "-1", "straight", 1);
 
-    public WFCModuleType turn90_0 = new WFCModuleType("1", "-1", "-1", "1", WFCModuleEnum2D.Turn90, 0);
-    public WFCModuleType turn90_1 = new WFCModuleType("1", "1", "-1", "-1", WFCModuleEnum2D.Turn90, 1);
-    public WFCModuleType turn90_2 = new WFCModuleType("-1", "1", "1", "-1", WFCModuleEnum2D.Turn90, 2);
-    public WFCModuleType turn90_3 = new WFCModuleType("-1", "-1", "1", "1", WFCModuleEnum2D.Turn90, 3);
+    public WFCModuleType turn90_0 = new WFCModuleType("1", "-1", "-1", "1", "turn90", 0);
+    public WFCModuleType turn90_1 = new WFCModuleType("1", "1", "-1", "-1", "turn90", 1);
+    public WFCModuleType turn90_2 = new WFCModuleType("-1", "1", "1", "-1", "turn90", 2);
+    public WFCModuleType turn90_3 = new WFCModuleType("-1", "-1", "1", "1", "turn90", 3);
 
-    public WFCModuleType pathT_0 = new WFCModuleType("-1", "1", "1", "1", WFCModuleEnum2D.PathT, 0);
-    public WFCModuleType pathT_1 = new WFCModuleType("1", "-1", "1", "1", WFCModuleEnum2D.PathT, 1);
-    public WFCModuleType pathT_2 = new WFCModuleType("1", "1", "-1", "1", WFCModuleEnum2D.PathT, 2);
-    public WFCModuleType pathT_3 = new WFCModuleType("1", "1", "1", "-1", WFCModuleEnum2D.PathT, 3);
+    public WFCModuleType pathT_0 = new WFCModuleType("-1", "1", "1", "1", "pathT", 0);
+    public WFCModuleType pathT_1 = new WFCModuleType("1", "-1", "1", "1", "pathT", 1);
+    public WFCModuleType pathT_2 = new WFCModuleType("1", "1", "-1", "1", "pathT", 2);
+    public WFCModuleType pathT_3 = new WFCModuleType("1", "1", "1", "-1", "pathT", 3);
 
-    public WFCModuleType deadEnd_0 = new WFCModuleType("-1", "-1", "-1", "1", WFCModuleEnum2D.DeadEnd, 0);
-    public WFCModuleType deadEnd_1 = new WFCModuleType("1", "-1", "-1", "-1", WFCModuleEnum2D.DeadEnd, 1);
-    public WFCModuleType deadEnd_2 = new WFCModuleType("-1", "1", "-1", "-1", WFCModuleEnum2D.DeadEnd, 2);
-    public WFCModuleType deadEnd_3 = new WFCModuleType("-1", "-1", "1", "-1", WFCModuleEnum2D.DeadEnd, 3);
+    public WFCModuleType deadEnd_0 = new WFCModuleType("-1", "-1", "-1", "1", "deadEnd", 0);
+    public WFCModuleType deadEnd_1 = new WFCModuleType("1", "-1", "-1", "-1", "deadEnd", 1);
+    public WFCModuleType deadEnd_2 = new WFCModuleType("-1", "1", "-1", "-1", "deadEnd", 2);
+    public WFCModuleType deadEnd_3 = new WFCModuleType("-1", "-1", "1", "-1", "deadEnd", 3);
+
+    // Creation of All 3D-module Data.
+
+    // BASICS
+    public WFCModuleType openSpace = new WFCModuleType("-1f", "-1f", "-1f", "-1f", "openSpace", 0, "-1f", "-1f");
+    public WFCModuleType flatGrass = new WFCModuleType("1s", "1s", "1s", "1s", "flatGrass", 0, "-1", "-1");
+
+    // COAST
+    public WFCModuleType coastStraight_0 = new WFCModuleType("0", "1s", "0f", "-1", "coastStraight", 0, "-1", "-1");
+    public WFCModuleType coastStraight_1 = new WFCModuleType("-1", "0", "1s", "0f", "coastStraight", 1, "-1", "-1");
+    public WFCModuleType coastStraight_2 = new WFCModuleType("0f", "-1", "0", "1s", "coastStraight", 2, "-1", "-1");
+    public WFCModuleType coastStraight_3 = new WFCModuleType("1s", "0f", "-1", "0", "coastStraight", 3, "-1", "-1");
+
+    public WFCModuleType coastEdgeInnerBend_0 = new WFCModuleType("1s", "1s", "0f", "0", "coastInnerBend", 0, "-1", "-1");
+    public WFCModuleType coastEdgeInnerBend_1 = new WFCModuleType("0", "1s", "1s", "0f", "coastInnerBend", 1, "-1", "-1");
+    public WFCModuleType coastEdgeInnerBend_2 = new WFCModuleType("0f", "0", "1s", "1s", "coastInnerBend", 2, "-1", "-1");
+    public WFCModuleType coastEdgeInnerBend_3 = new WFCModuleType("1s", "0f", "0", "1s", "coastInnerBend", 3, "-1", "-1");
+
+    public WFCModuleType coastEdgeOuterBend_0 = new WFCModuleType("0", "0f", "-1", "-1", "coastOuterBend", 0, "-1", "-1");
+    public WFCModuleType coastEdgeOuterBend_1 = new WFCModuleType("-1", "0", "0f", "-1", "coastOuterBend", 1, "-1", "-1");
+    public WFCModuleType coastEdgeOuterBend_2 = new WFCModuleType("-1", "-1", "0", "0f", "coastOuterBend", 2, "-1", "-1");
+    public WFCModuleType coastEdgeOuterBend_3 = new WFCModuleType("0f", "-1", "-1", "0", "coastOuterBend", 3, "-1", "-1");
+
+    // CLIFF STEM
+    public WFCModuleType cliffStemStraight_0 = new WFCModuleType("4", "-1", "4f", "-1", "cliffStemStraight", 0, "v0_0", "-1");
+    public WFCModuleType cliffStemStraight_1 = new WFCModuleType("-1", "4", "-1", "4f", "cliffStemStraight", 1, "v0_1", "-1");
+    public WFCModuleType cliffStemStraight_2 = new WFCModuleType("4f", "-1", "4", "-1", "cliffStemStraight", 2, "v0_2", "-1");
+    public WFCModuleType cliffStemStraight_3 = new WFCModuleType("-1", "4f", "-1", "4", "cliffStemStraight", 3, "v0_3", "-1");
+
+    public WFCModuleType cliffStemInnerBend_0 = new WFCModuleType("-1", "-1", "4f", "4", "cliffStemInnerBend", 0, "v1_0", "-1");
+    public WFCModuleType cliffStemInnerBend_1 = new WFCModuleType("4", "-1", "-1", "4f", "cliffStemInnerBend", 1, "v1_1", "-1");
+    public WFCModuleType cliffStemInnerBend_2 = new WFCModuleType("4f", "4", "-1", "-1", "cliffStemInnerBend", 2, "v1_2", "-1");
+    public WFCModuleType cliffStemInnerBend_3 = new WFCModuleType("-1", "4f", "4", "-1", "cliffStemInnerBend", 3, "v1_3", "-1");
+
+    public WFCModuleType cliffStemOuterBend_0 = new WFCModuleType("4", "4f", "1s", "1s", "cliffStemOuterBend", 0, "v2_0", "-1");
+    public WFCModuleType cliffStemOuterBend_1 = new WFCModuleType("1s", "4", "4f", "1s", "cliffStemOuterBend", 1, "v2_1", "-1");
+    public WFCModuleType cliffStemOuterBend_2 = new WFCModuleType("1s", "1s", "4", "4f", "cliffStemOuterBend", 2, "v2_2", "-1");
+    public WFCModuleType cliffStemOuterBend_3 = new WFCModuleType("4f", "1s", "1s", "4", "cliffStemOuterBend", 3, "v2_3", "-1");
+
+    // CLIFF
+    public WFCModuleType cliffStraight_0 = new WFCModuleType("2s", "-1", "2s", "-1", "cliffStraight", 0, "v0_0", "v0_0");
+    public WFCModuleType cliffStraight_1 = new WFCModuleType("-1", "2s", "-1", "2s", "cliffStraight", 1, "v0_1", "v0_1");
+    public WFCModuleType cliffStraight_2 = new WFCModuleType("2s", "-1", "2s", "-1", "cliffStraight", 2, "v0_2", "v0_2");
+    public WFCModuleType cliffStraight_3 = new WFCModuleType("-1", "2s", "-1", "2s", "cliffStraight", 3, "v0_3", "v0_3");
+
+    public WFCModuleType cliffInnerBend_0 = new WFCModuleType("-1", "-1", "2s", "2s", "cliffInnerBend", 0, "v1_0", "v1_0");
+    public WFCModuleType cliffInnerBend_1 = new WFCModuleType("2s", "-1", "-1", "2s", "cliffInnerBend", 1, "v1_1", "v1_1");
+    public WFCModuleType cliffInnerBend_2 = new WFCModuleType("2s", "2s", "-1", "-1", "cliffInnerBend", 2, "v1_2", "v1_2");
+    public WFCModuleType cliffInnerBend_3 = new WFCModuleType("-1", "2s", "2s", "-1", "cliffInnerBend", 3, "v1_3", "v1_3");
+
+    public WFCModuleType cliffOuterBend_0 = new WFCModuleType("-1", "2s", "2s", "-1", "cliffOuterBend", 0, "v2_0", "v2_0");
+    public WFCModuleType cliffOuterBend_1 = new WFCModuleType("-1", "-1", "2s", "2s", "cliffOuterBend", 1, "v2_1", "v2_1");
+    public WFCModuleType cliffOuterBend_2 = new WFCModuleType("2s", "-1", "-1", "2s", "cliffOuterBend", 2, "v2_2", "v2_2");
+    public WFCModuleType cliffOuterBend_3 = new WFCModuleType("2s", "2s", "-1", "-1", "cliffOuterBend", 3, "v2_3", "v2_3");
+
+    // CLIFF EDGE
+    public WFCModuleType cliffEdgeStraight_0 = new WFCModuleType("3", "1s", "3f", "-1", "cliffEdgeStraight", 0, "-1", "v0_0");
+    public WFCModuleType cliffEdgeStraight_1 = new WFCModuleType("-1", "3", "1s", "3f", "cliffEdgeStraight", 1, "-1", "v0_1");
+    public WFCModuleType cliffEdgeStraight_2 = new WFCModuleType("3f", "-1", "3", "1s", "cliffEdgeStraight", 2, "-1", "v0_2");
+    public WFCModuleType cliffEdgeStraight_3 = new WFCModuleType("1s", "3f", "-1", "3", "cliffEdgeStraight", 3, "-1", "v0_3");
+
+    public WFCModuleType cliffEdgeInnerBend_0 = new WFCModuleType("1s", "1s", "3f", "3", "cliffEdgeInnerBend", 0, "-1", "v1_0");
+    public WFCModuleType cliffEdgeInnerBend_1 = new WFCModuleType("3", "1s", "1s", "3f", "cliffEdgeInnerBend", 1, "-1", "v1_1");
+    public WFCModuleType cliffEdgeInnerBend_2 = new WFCModuleType("3f", "3", "1s", "1s", "cliffEdgeInnerBend", 2, "-1", "v1_2");
+    public WFCModuleType cliffEdgeInnerBend_3 = new WFCModuleType("1s", "3f", "3", "1s", "cliffEdgeInnerBend", 3, "-1", "v1_3");
+
+    public WFCModuleType cliffEdgeOuterBend_0 = new WFCModuleType("3", "3f", "-1", "-1", "cliffEdgeOuterBend", 0, "-1", "v2_0");
+    public WFCModuleType cliffEdgeOuterBend_1 = new WFCModuleType("-1", "3", "3f", "-1", "cliffEdgeOuterBend", 1, "-1", "v2_1");
+    public WFCModuleType cliffEdgeOuterBend_2 = new WFCModuleType("-1", "-1", "3", "3f", "cliffEdgeOuterBend", 2, "-1", "v2_2");
+    public WFCModuleType cliffEdgeOuterBend_3 = new WFCModuleType("3f", "-1", "-1", "3", "cliffEdgeOuterBend", 3, "-1", "v2_3");
+
+    // Must make this later.
+    public WFCModuleType cliffEdgeToStem = new WFCModuleType("f", "f", "f", "f", "cliffEdgeToStem", 0, "f", "´f");
+
+
+
+    /* 3D island SOCKETS.
+     * 
+     * -1 is null space.
+     * 0 is COAST bend: -\         while: /- is 0f
+     * 1s is straight horizontal line: ---
+     * 2s is straight vertical line: |
+     * 
+     * 3 is CLIFFEDGE_SIDE: -\    while /- is 3f
+     * 
+     * 4 is CLIFFSTEM_SIDE: |\_     while: _/| is 4f 
+     * 
+     * v0 is straight vertical.
+     * v1 is inner bend vertical.
+     * v2 is outer bend vertical. 
+     */
 }
 
 
@@ -288,54 +446,19 @@ public class WFCModuleType
     public string posY;
     public string negY;
 
-    public WFCModuleEnum2D myEnum;
+    public string myType;
     public int rotation;
 
-    public WFCModuleType(string posZ, string posX, string negZ, string negX, WFCModuleEnum2D myEnum, int rotation, string posY = null, string negY = null)
+    public WFCModuleType(string posZ, string posX, string negZ, string negX, string type, int rotation, string posY = null, string negY = null)
     {
         this.posZ = posZ;
         this.posX = posX;
         this.negZ = negZ;
         this.negX = negX;
-        this.myEnum = myEnum;
+        this.myType = type;
         this.rotation = rotation;
 
         this.posY = posY;
         this.negY = negY;
     }
-}
-
-public enum WFCModuleEnum2D
-{
-    Blank = 0,
-    Straight = 1,
-    Turn90 = 2,
-
-    Cross = 3,
-    PathT = 4,
-    DeadEnd = 5,
-}
-
-public enum WFCModuleEnum3D
-{
-    coastStraight = 0,
-    coast_OuterBend = 1,
-    coast_InnerBend = 2,
-
-    FlatGrass = 3,
-    openSpace = 4,
-
-    cliffEdgeStem_Straight = 5,
-    CliffEdgeStem_OuterBend = 6,
-    CliffEdgeStem_InnerBend = 7,
-
-    Cliff_Straight = 8,
-    Cliff_OuterBend = 9,
-    Cliff_InnerBend = 10,
-
-    CliffEdge_Straight = 11,
-    CliffEdge_OuterBend = 12,
-    CliffEdge_InnerBend = 13,
-
-
 }

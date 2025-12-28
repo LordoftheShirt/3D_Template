@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42d3e43241d4be0498665a35fa5a6eeb, type: 3}
   m_Name: Turn90
   m_EditorClassIdentifier: Assembly-CSharp::ScriptableModuies
+  moduleName: turn90
   module: 2
   prefab: {fileID: 7876164265060288118, guid: 610511f38e7975f4c9a9e6101e6230e3, type: 3}
+  weightPercentage: 1

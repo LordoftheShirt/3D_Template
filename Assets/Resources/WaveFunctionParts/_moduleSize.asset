@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 42d3e43241d4be0498665a35fa5a6eeb, type: 3}
-  m_Name: pathT
-  m_EditorClassIdentifier: Assembly-CSharp::ScriptableModuies
-  module: 4
-  prefab: {fileID: 4164221879583171077, guid: 03c3d6329cfdeca45a3530b1fbee3aa9, type: 3}
+  m_Name: _moduleSize
+  m_EditorClassIdentifier: Assembly-CSharp::ScriptableModules
+  moduleName: moduleSize
+  prefab: {fileID: 919132149155446097, guid: cb59c2a74a8fe0448ad8484773c97946, type: 3}
+  weightPercentage: 1

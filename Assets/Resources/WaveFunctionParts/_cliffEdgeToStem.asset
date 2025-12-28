@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 42d3e43241d4be0498665a35fa5a6eeb, type: 3}
-  m_Name: DeadEnd
-  m_EditorClassIdentifier: Assembly-CSharp::ScriptableModuies
-  module: 5
-  prefab: {fileID: 4481250678177888796, guid: bea6bd56f901bb3468bfe833bdb01e08, type: 3}
+  m_Name: _cliffEdgeToStem
+  m_EditorClassIdentifier: Assembly-CSharp::ScriptableModules
+  moduleName: cliffEdgeToStem
+  prefab: {fileID: 919132149155446097, guid: d4c331beb011466499cd9e0fdbb9d897, type: 3}
+  weightPercentage: 1
