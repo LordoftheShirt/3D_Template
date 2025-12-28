@@ -8,7 +8,7 @@ using UnityEngine;
 public class WFCSlot : MonoBehaviour
 {
     //neighbours
-    public WFCModuleType topN, rightN, bottomN, leftN;
+    public WFCModuleType topN, rightN, bottomN, leftN, above3DN, below3DN;
     public WFCModuleType myModule;
     public GameObject myPrefab;
 
@@ -18,6 +18,7 @@ public class WFCSlot : MonoBehaviour
 
     public int myRow;
     public int myCol;
+    public int myHeight3D = 0;
 
     private void Awake()
     {
@@ -39,19 +40,26 @@ public class WFCSlot : MonoBehaviour
     {
         //
         if (WFCAlgorithm.Instance.rowMax > myRow + 1)
-            rightN = WFCAlgorithm.Instance.levelGrid[myRow + 1, myCol].myModule;
+            rightN = WFCAlgorithm.Instance.levelGrid[myRow + 1, myCol, myHeight3D].myModule;
 
         if (0 <= myRow - 1)
-            leftN = WFCAlgorithm.Instance.levelGrid[myRow - 1, myCol].myModule;
+            leftN = WFCAlgorithm.Instance.levelGrid[myRow - 1, myCol, myHeight3D].myModule;
 
         if (0 <= myCol - 1)
-        {
-            bottomN = WFCAlgorithm.Instance.levelGrid[myRow, myCol - 1].myModule;
-            //Debug.Log("UpdateNeighbour BottomN if assigned: " + bottomN);
-        }
+            bottomN = WFCAlgorithm.Instance.levelGrid[myRow, myCol - 1, myHeight3D].myModule;
+
 
         if (WFCAlgorithm.Instance.rowMax > myCol + 1)
-            topN = WFCAlgorithm.Instance.levelGrid[myRow, myCol + 1].myModule;
+            topN = WFCAlgorithm.Instance.levelGrid[myRow, myCol + 1, myHeight3D].myModule;
+
+        if (WFCAlgorithm.Instance.height3DMax > 1)
+        {
+            if (WFCAlgorithm.Instance.height3DMax > myHeight3D + 1)
+                rightN = WFCAlgorithm.Instance.levelGrid[myRow, myCol, myHeight3D + 1].myModule;
+
+            if (0 <= myHeight3D - 1)
+                leftN = WFCAlgorithm.Instance.levelGrid[myRow, myCol, myHeight3D - 1].myModule;
+        }
 
 
         CalculateLocalEntropy();
@@ -62,7 +70,7 @@ public class WFCSlot : MonoBehaviour
         //Debug.Log("MyEntropy before filter: " + GetEntropy());
         // In which case, it's already been collapsed.
         if (myPrefab != null)
-        return;
+            return;
 
         int entropyCount = myModuleAlternatives.Count;
 
@@ -82,34 +90,44 @@ public class WFCSlot : MonoBehaviour
             //Debug.Log("Entropy lowered!" + GetEntropy());
         }
 
-        
-        if (leftN != null)   
+
+        if (leftN != null)
             myModuleAlternatives.RemoveWhere(r => r.negX != leftN.posX);
-        
-        if (rightN != null)       
+
+        if (rightN != null)
             myModuleAlternatives.RemoveWhere(r => r.posX != rightN.negX);
 
         if (myModuleAlternatives.Count == 0)
         {
             //Debug.Log("No alternatives LEFT ERROR:" + myRow + ", " + myCol);
-            WFCAlgorithm.Instance.CollapseTile(myRow, myCol, WFCAlgorithm.Instance.blank);
+            WFCAlgorithm.Instance.CollapseTile(myRow, myCol, 0, WFCAlgorithm.Instance.blank);
 
         }
-        
+
+        if (WFCAlgorithm.Instance.height3DMax > 1)
+        {
+            if (above3DN != null)
+                myModuleAlternatives.RemoveWhere(r => r.posY != above3DN.negY);
+
+            if (below3DN != null)
+                myModuleAlternatives.RemoveWhere(r => r.negY != below3DN.posY);
+        }
+
+
         if (entropyCount != myModuleAlternatives.Count)
         {
             //Debug.Log("Entropy changed from " +  entropyCount + " to " + myModuleAlternatives.Count);
             UpdateTextDisplay();
 
             // only those with a collapsed neigbour are allowed to update the entropy of all their neigbours.
-            if (topN != null || rightN != null || bottomN != null || leftN != null)
-                WFCAlgorithm.Instance.UpdateSurroundingNeighbours(myRow, myCol);;
+            if (topN != null || rightN != null || bottomN != null || leftN != null || above3DN != null || below3DN != null)
+                WFCAlgorithm.Instance.UpdateSurroundingNeighbours(myRow, myCol, myHeight3D); ;
         }
-        
+
     }
 
     public void UpdateTextDisplay()
     {
-        myText.text = myRow + ", " + myCol + "\nE: " + GetEntropy();
+        myText.text = myRow + ", " + myCol + ", " + myHeight3D + "\nE: " + GetEntropy();
     }
 }

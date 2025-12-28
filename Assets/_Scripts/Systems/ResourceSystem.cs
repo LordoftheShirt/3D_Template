@@ -15,7 +15,7 @@ public class ResourceSystem : Singleton<ResourceSystem>
     */
 
     public List<ScriptableModules> WFCModuleList { get; private set; }
-    public Dictionary<WFCModuleEnum, ScriptableModules> _WFCModulesDict;
+    public Dictionary<WFCModuleEnum2D, ScriptableModules> _WFCModulesDict;
 
 
     protected override void Awake()
@@ -42,7 +42,7 @@ public class ResourceSystem : Singleton<ResourceSystem>
     public ScriptableExampleHero GetExampleHero(ExampleHeroType t) => _ExampleHeroesDict[t];
     public ScriptableExampleHero GetRandomHero() => ExampleHeroes[Random.Range(0, ExampleHeroes.Count)];
 
-    public ScriptableModules GetWFCModule(WFCModuleEnum t) => _WFCModulesDict[t];
+    public ScriptableModules GetWFCModule(WFCModuleEnum2D t) => _WFCModulesDict[t];
 
     /* Attempt 1
     public WFC_2D_Scriptable GetWaveFunctionPart(WFCType t) => _WFCPartsDict[t];

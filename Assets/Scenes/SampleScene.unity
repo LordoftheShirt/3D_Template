@@ -694,6 +694,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WFCAlgorithm
   rowMax: 32
   columnMax: 32
+  height3DMax: 1
   TileTextDisplay: {fileID: 3187963805390420780, guid: 8396abc97c3ac2942bd1c6ccdc36fa71, type: 3}
 --- !u!4 &588413314
 Transform:
