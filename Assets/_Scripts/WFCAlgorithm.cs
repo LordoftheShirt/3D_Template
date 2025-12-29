@@ -16,12 +16,15 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
     public HashSet<WFCModuleType> allModuleAlternatives = new HashSet<WFCModuleType>();
     private Vector3 meshSize;
 
+    private float timer = 1;
+
     private bool algorithmComplete = false, firstTilePlaced = false;
     protected override void Awake()
     {
         //singleton
         base.Awake();
 
+        /*
         allModuleAlternatives.Add(blank);
         allModuleAlternatives.Add(cross);
 
@@ -49,7 +52,7 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
         // 3D
         allModuleAlternatives.Add(openSpace);
         allModuleAlternatives.Add(flatGrass);
-
+        
         // COAST
         allModuleAlternatives.Add(coastEdgeInnerBend_0);
         allModuleAlternatives.Add(coastEdgeInnerBend_1);
@@ -63,7 +66,7 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
 
         allModuleAlternatives.Add(coastStraight_0);
         allModuleAlternatives.Add(coastStraight_1);
-
+        /*
         // Everything CIFF
         allModuleAlternatives.Add(cliffStemInnerBend_0);
         allModuleAlternatives.Add(cliffStemInnerBend_1);
@@ -94,10 +97,11 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
         allModuleAlternatives.Add(cliffEdgeStraight_1);
         allModuleAlternatives.Add(cliffEdgeStraight_2);
         allModuleAlternatives.Add(cliffEdgeStraight_3);
-
+        /*
         //include edgeToStem here.
 
         // These "Only Walls" can be left out upon first trial.
+        /*
         allModuleAlternatives.Add(cliffInnerBend_0);
         allModuleAlternatives.Add(cliffInnerBend_1);
         allModuleAlternatives.Add(cliffInnerBend_2);
@@ -112,7 +116,7 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
         allModuleAlternatives.Add(cliffStemStraight_1);
         allModuleAlternatives.Add(cliffStemStraight_2);
         allModuleAlternatives.Add(cliffStemStraight_3);
-
+        */
         // TODO:
         /*
          * I want the second away neighbour to be able to react. DONE?! (Currently untestable.)
@@ -140,7 +144,7 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
             {
                 for (int y = 0; height3DMax > y; y++)
                 {
-                    levelGrid[i, j, y] = Instantiate(TileTextDisplay, new Vector3(meshSize.x * i, 5, meshSize.z * j), Quaternion.Euler(new Vector3(90, 0, 0)), this.transform).GetComponent<WFCSlot>();
+                    levelGrid[i, j, y] = Instantiate(TileTextDisplay, new Vector3(meshSize.x * i, 5 + meshSize.y * y+2, meshSize.z * j), Quaternion.Euler(new Vector3(90, 0, 0)), this.transform).GetComponent<WFCSlot>();
                     levelGrid[i, j, y].myRow = i;
                     levelGrid[i, j, y].myCol = j;
                     // Remember: x = row, z = column.
@@ -164,19 +168,22 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
 
     void Update()
     {
-        /*
+        if (!firstTilePlaced)
+        {
+            CollapseTile(2, 2, 0, flatGrass);
+            firstTilePlaced = true;
+        }
+
         if (timer > 0)
             timer = timer - Time.deltaTime;
-        else if (!algorithmComplete && timer <= 0)
+        else if (timer <= 0)
         {
-            RunAlgorithm();
-            timer = 0.05f;
-        } */
-
-        if (!algorithmComplete)
-            RunAlgorithm();
-        else
-            ResetAlgorithm();
+            if (!algorithmComplete)
+                RunAlgorithm();
+            else
+                ResetAlgorithm();
+            timer = 1f;
+        } 
 
     }
 
@@ -200,11 +207,6 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
     }
     public void RunAlgorithm()
     {
-        if (!firstTilePlaced)
-        {
-            RandomizeFirstTile();
-            firstTilePlaced = true;
-        }
 
 
         int entropy, row, column, height3D;
@@ -263,7 +265,7 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
 
     public void RandomizeFirstTile()
     {
-        CollapseTile(Random.Range(0, rowMax), Random.Range(0, columnMax), Random.Range(0, height3DMax));
+        CollapseTile(Random.Range(0, rowMax), Random.Range(0, columnMax));
     }
 
     // type should typically be null. The type parameter exists only in case one wants to force it. For instance, when placing the first Tile.
@@ -278,7 +280,8 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
                 type = levelGrid[row, col, height3D].myModuleAlternatives.ElementAt(randomIndex);
 
                 // If the weight does not fulfill the size of the random value, do a do-over. Example: weight is 10% and random.value rolls 20%. Now, random.value is bigger than the weight. Try again. 
-                if (ResourceSystem.Instance.GetWFCModule(type.myType).weightPercentage <= Random.value)
+                // Also, if on the bottom layer, checks that the downwards socket is -1.
+                if (ResourceSystem.Instance.GetWFCModule(type.myType).weightPercentage <= Random.value || (height3D == 0 && !type.negY.Contains("-1")))
                     randomIndex = -1;
             }
             // Random index.
@@ -378,6 +381,7 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
     public WFCModuleType cliffStemOuterBend_2 = new WFCModuleType("1s", "1s", "4", "4f", "cliffStemOuterBend", 2, "v2_2", "-1");
     public WFCModuleType cliffStemOuterBend_3 = new WFCModuleType("4f", "1s", "1s", "4", "cliffStemOuterBend", 3, "v2_3", "-1");
 
+
     // CLIFF
     public WFCModuleType cliffStraight_0 = new WFCModuleType("2s", "-1", "2s", "-1", "cliffStraight", 0, "v0_0", "v0_0");
     public WFCModuleType cliffStraight_1 = new WFCModuleType("-1", "2s", "-1", "2s", "cliffStraight", 1, "v0_1", "v0_1");
@@ -449,7 +453,7 @@ public class WFCModuleType
     public string myType;
     public int rotation;
 
-    public WFCModuleType(string posZ, string posX, string negZ, string negX, string type, int rotation, string posY = null, string negY = null)
+    public WFCModuleType(string posZ, string posX, string negZ, string negX, string type, int rotation, string posY = "", string negY = "")
     {
         this.posZ = posZ;
         this.posX = posX;
