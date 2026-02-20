@@ -50,6 +50,7 @@ public class WFCAlgorithm : Singleton<WFCAlgorithm>
         allModuleAlternatives.Add(deadEnd_3); */
 
         // 3D
+
         allModuleAlternatives.Add(openSpace);
         allModuleAlternatives.Add(flatGrass);
         
